@@ -80,6 +80,7 @@ button:hover{opacity:.9}
 table{width:100%;border-collapse:collapse;margin-top:10px;}
 th,td{border:1px solid #fff;padding:6px;}
 th{background:#222;}
+small{opacity:.8}
 </style>
 </head>
 
@@ -87,98 +88,127 @@ th{background:#222;}
 
 <div class="container">
 
-<img id="logo" src="https://i.postimg.cc/7YKMkCFf/file-000000004aa471fa98fe9bf6b8d84453.png">
+<img id="logo" src="https://i.postimg.cc/7YKMkCFf/file-000000004aa471fa98fe9bf6b8d84453.png" alt="logo">
 
 <!-- MEMBER FORM -->
 <div id="memberForm">
-<h2>SSD ATTENDANCE FORM</h2>
+  <h2>SSD ATTENDANCE FORM</h2>
 
-<form id="attendanceForm">
+  <form id="attendanceForm">
+    <label>NAME:</label>
+    <input type="text" id="nameInput" required>
 
-<label>NAME:</label>
-<input type="text" id="nameInput" required>
+    <label>IGN CPM:</label>
+    <input type="text" id="ignInput" required>
 
-<label>IGN CPM:</label>
-<input type="text" id="ignInput" required>
+    <label>ID CPM:</label>
+    <input type="text" id="cpmIdInput" required>
 
-<label>ID CPM:</label>
-<input type="text" id="cpmIdInput" required>
+    <label>ROLES:</label>
 
-<label>ROLES:</label>
+    <div style="display:flex;flex-direction:column;gap:6px;margin:10px 0;align-items:flex-start;">
 
-<div style="display:flex;flex-direction:column;gap:6px;margin:10px 0;align-items:flex-start;">
+      <button type="button" class="roleBtn" data-role="Owner">
+        <div class="roleBox"></div> Owner
+      </button>
+      <button type="button" class="roleBtn" data-role="Co owner">
+        <div class="roleBox"></div> Co owner
+      </button>
+      <button type="button" class="roleBtn" data-role="President">
+        <div class="roleBox"></div> President
+      </button>
+      <button type="button" class="roleBtn" data-role="Vice president">
+        <div class="roleBox"></div> Vice president
+      </button>
+      <button type="button" class="roleBtn" data-role="Admin">
+        <div class="roleBox"></div> Admin
+      </button>
+      <button type="button" class="roleBtn" data-role="Members">
+        <div class="roleBox"></div> Members
+      </button>
 
-<button type="button" class="roleBtn" data-role="Owner">
-  <div class="roleBox"></div> Owner
-</button>
-<button type="button" class="roleBtn" data-role="Co owner">
-  <div class="roleBox"></div> Co owner
-</button>
-<button type="button" class="roleBtn" data-role="President">
-  <div class="roleBox"></div> President
-</button>
-<button type="button" class="roleBtn" data-role="Vice president">
-  <div class="roleBox"></div> Vice president
-</button>
-<button type="button" class="roleBtn" data-role="Admin">
-  <div class="roleBox"></div> Admin
-</button>
-<button type="button" class="roleBtn" data-role="Members">
-  <div class="roleBox"></div> Members
-</button>
+    </div>
 
-</div>
+    <!-- hidden checkboxes -->
+    <div class="hidden" id="roleCheckboxes">
+      <input type="checkbox" name="roles" value="Owner">
+      <input type="checkbox" name="roles" value="Co owner">
+      <input type="checkbox" name="roles" value="President">
+      <input type="checkbox" name="roles" value="Vice president">
+      <input type="checkbox" name="roles" value="Admin">
+      <input type="checkbox" name="roles" value="Members">
+    </div>
 
-<!-- hidden checkboxes -->
-<div class="hidden" id="roleCheckboxes">
-  <input type="checkbox" name="roles" value="Owner">
-  <input type="checkbox" name="roles" value="Co owner">
-  <input type="checkbox" name="roles" value="President">
-  <input type="checkbox" name="roles" value="Vice president">
-  <input type="checkbox" name="roles" value="Admin">
-  <input type="checkbox" name="roles" value="Members">
-</div>
+    <button type="submit">SUBMIT FORM</button>
+  </form>
 
-<button type="submit">SUBMIT FORM</button>
-</form>
-
-<button id="adminLoginBtn">Admin Login</button>
+  <button id="adminLoginBtn">Admin Login</button>
+  <div style="margin-top:6px;">
+    <small>Online save: Google Sheet (works on Chrome)</small>
+  </div>
 </div>
 
 <!-- ADMIN DASHBOARD -->
 <div id="adminDashboard" class="hidden">
-<h2>Admin Dashboard</h2>
+  <h2>Admin Dashboard</h2>
 
-<label>Reset Time:
-<input type="time" id="resetTimeInput">
-</label>
-<button id="setTimeBtn">Set Time</button>
+  <label>Reset Time:
+    <input type="time" id="resetTimeInput">
+  </label>
+  <button id="setTimeBtn">Set Time</button>
 
-<div style="margin-top:10px;">
-<button id="resetBtn">Reset Attendance Members</button>
-<button id="downloadBtn">Download Attendance CSV</button>
-</div>
+  <div style="margin-top:10px;">
+    <button id="resetBtn">Reset Attendance Members</button>
+    <button id="downloadBtn">Download Attendance CSV</button>
+  </div>
 
-<table>
-<thead>
-<tr>
-<th>No</th><th>Name</th><th>IGN</th><th>ID</th><th>Roles</th>
-</tr>
-</thead>
-<tbody id="adminTable"></tbody>
-</table>
+  <table>
+    <thead>
+      <tr>
+        <th>No</th><th>Name</th><th>IGN</th><th>ID</th><th>Roles</th>
+      </tr>
+    </thead>
+    <tbody id="adminTable"></tbody>
+  </table>
 
-<button id="logoutBtn">Logout Admin</button>
+  <button id="logoutBtn">Logout Admin</button>
 </div>
 
 </div>
 
 <script>
-// ---------- DATA ----------
-let attendanceData = JSON.parse(localStorage.getItem('ssdAttendance')) || [];
+/* =========================
+   CONFIG (EDIT THIS)
+========================= */
+const SCRIPT_URL = "ssdwebattendance.netlify.app";
+const ADMIN_KEY  = "SSD_ADMIN_2025";
+
+/* =========================
+   ELEMENTS
+========================= */
+const attendanceForm = document.getElementById('attendanceForm');
+const nameInput = document.getElementById('nameInput');
+const ignInput = document.getElementById('ignInput');
+const cpmIdInput = document.getElementById('cpmIdInput');
+
+const memberForm = document.getElementById('memberForm');
+const adminDashboard = document.getElementById('adminDashboard');
+const adminLoginBtn = document.getElementById('adminLoginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+
+const resetBtn = document.getElementById('resetBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const adminTable = document.getElementById('adminTable');
+
+const resetTimeInput = document.getElementById('resetTimeInput');
+const setTimeBtn = document.getElementById('setTimeBtn');
+
+let attendanceData = []; // server data
 let resetTime = localStorage.getItem('ssdResetTime') || null;
 
-// ---------- ROLE BUTTONS ----------
+/* =========================
+   ROLE BUTTONS
+========================= */
 const roleBtns = document.querySelectorAll('.roleBtn');
 const roleCheckboxes = document.querySelectorAll('#roleCheckboxes input');
 
@@ -191,96 +221,199 @@ roleBtns.forEach(btn=>{
   });
 });
 
-// ---------- SUBMIT FORM ----------
-attendanceForm.addEventListener('submit',e=>{
+/* =========================
+   API HELPERS
+========================= */
+async function apiGetAttendance() {
+  const res = await fetch(SCRIPT_URL, { method: "GET" });
+  if (!res.ok) throw new Error("Cannot load attendance");
+  return await res.json();
+}
+
+async function apiSubmitAttendance(payload) {
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  });
+  const out = await res.json().catch(()=>({ok:false,error:"Bad response"}));
+  if (!out.ok) throw new Error(out.error || "Submit failed");
+  return out;
+}
+
+async function apiResetAttendance() {
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ action: "reset", adminKey: ADMIN_KEY })
+  });
+  const out = await res.json().catch(()=>({ok:false,error:"Bad response"}));
+  if (!out.ok) throw new Error(out.error || "Reset failed");
+  return out;
+}
+
+/* =========================
+   SUBMIT FORM (ONLINE SAVE)
+========================= */
+attendanceForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  if (!SCRIPT_URL || SCRIPT_URL.includes("PASTE_YOUR")) {
+    return alert("Error: PASTE your Apps Script Web App URL first!");
+  }
+
   const roles = [...roleCheckboxes]
-    .filter(c=>c.checked)
-    .map(c=>c.value)
+    .filter(c => c.checked)
+    .map(c => c.value)
     .join(', ');
 
-  attendanceData.push({
-    name:nameInput.value,
-    ign:ignInput.value,
-    cpmId:cpmIdInput.value,
+  const payload = {
+    action: "submit",
+    name: nameInput.value.trim(),
+    ign: ignInput.value.trim(),
+    cpmId: cpmIdInput.value.trim(),
     roles
-  });
+  };
 
-  localStorage.setItem('ssdAttendance',JSON.stringify(attendanceData));
-  alert('Attendance submitted!');
+  try {
+    await apiSubmitAttendance(payload);
 
-  e.target.reset();
-  roleCheckboxes.forEach(c=>c.checked=false);
-  roleBtns.forEach(b=>b.classList.remove('active'));
+    alert("Attendance submitted (saved online)!");
+    e.target.reset();
+
+    roleCheckboxes.forEach(c=>c.checked=false);
+    roleBtns.forEach(b=>b.classList.remove('active'));
+
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
 });
 
-// ---------- ADMIN ----------
-adminLoginBtn.onclick=()=>{
-  if(prompt('Username:')==='ssdadmin2025' && prompt('Password:')==='Admincpmoi2025'){
+/* =========================
+   ADMIN LOGIN
+========================= */
+adminLoginBtn.onclick = async () => {
+  const u = prompt('Username:');
+  const p = prompt('Password:');
+
+  if (u === 'ssdadmin2025' && p === 'Admincpmoi2025') {
     memberForm.classList.add('hidden');
     adminDashboard.classList.remove('hidden');
-    renderTable();
-  } else alert('Invalid credentials');
+    await renderTable();
+  } else {
+    alert('Invalid credentials');
+  }
 };
 
-logoutBtn.onclick=()=>{
+logoutBtn.onclick = () => {
   adminDashboard.classList.add('hidden');
   memberForm.classList.remove('hidden');
 };
 
-function renderTable(){
-  adminTable.innerHTML='';
-  attendanceData.forEach((d,i)=>{
-    adminTable.innerHTML+=`
-    <tr>
-      <td>${i+1}</td>
-      <td>${d.name}</td>
-      <td>${d.ign}</td>
-      <td>${d.cpmId}</td>
-      <td>${d.roles}</td>
-    </tr>`;
-  });
+/* =========================
+   RENDER TABLE (FROM SERVER)
+========================= */
+async function renderTable(){
+  try {
+    attendanceData = await apiGetAttendance();
+
+    adminTable.innerHTML = '';
+    attendanceData.forEach((d,i)=>{
+      adminTable.innerHTML += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${escapeHtml(d.name || "")}</td>
+        <td>${escapeHtml(d.ign || "")}</td>
+        <td>${escapeHtml(d.cpmId || "")}</td>
+        <td>${escapeHtml(d.roles || "")}</td>
+      </tr>`;
+    });
+  } catch (err) {
+    adminTable.innerHTML = `<tr><td colspan="5">Error loading: ${escapeHtml(err.message)}</td></tr>`;
+  }
 }
 
-// ---------- RESET ----------
-resetBtn.onclick=()=>{
-  if(confirm('Reset all attendance?')){
-    attendanceData=[];
-    localStorage.setItem('ssdAttendance','[]');
-    renderTable();
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+  }[s]));
+}
+
+/* =========================
+   RESET (SERVER CLEAR)
+========================= */
+resetBtn.onclick = async () => {
+  if (!confirm('Reset all attendance ONLINE?')) return;
+  try {
+    await apiResetAttendance();
+    await renderTable();
+    alert("Attendance reset (online)!");
+  } catch (err) {
+    alert("Error: " + err.message);
   }
 };
 
-// ---------- DOWNLOAD ----------
-downloadBtn.onclick=()=>{
-  if(attendanceData.length===0) return alert('No data');
-  const csv = attendanceData.map(d=>`${d.name},${d.ign},${d.cpmId},${d.roles}`).join('\n');
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download='attendance.csv';
-  a.click();
-};
+/* =========================
+   DOWNLOAD CSV (SERVER DATA)
+========================= */
+downloadBtn.onclick = async () => {
+  try {
+    attendanceData = await apiGetAttendance();
+    if (attendanceData.length === 0) return alert("No data");
 
-// ---------- RESET TIME ----------
-if(resetTime) resetTimeInput.value=resetTime;
-setTimeBtn.onclick=()=>{
-  resetTime=resetTimeInput.value;
-  localStorage.setItem('ssdResetTime',resetTime);
-  alert('Reset time set');
-};
+    const header = "Name,IGN,CPM ID,Roles";
+    const csv = header + "\n" + attendanceData
+      .map(d => `"${(d.name||"").replace(/"/g,'""')}","${(d.ign||"").replace(/"/g,'""')}","${(d.cpmId||"").replace(/"/g,'""')}","${(d.roles||"").replace(/"/g,'""')}"`)
+      .join("\n");
 
-// ---------- AUTO RESET ----------
-setInterval(()=>{
-  if(!resetTime) return;
-  const now=new Date();
-  const [h,m]=resetTime.split(':').map(Number);
-  if(now.getHours()===h && now.getMinutes()===m){
-    attendanceData=[];
-    localStorage.setItem('ssdAttendance','[]');
-    renderTable();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+    a.download = 'attendance.csv';
+    a.click();
+  } catch (err) {
+    alert("Error: " + err.message);
   }
-},60000);
+};
+
+/* =========================
+   RESET TIME (LOCAL SETTING)
+   - This triggers ONLINE reset once per day at set time.
+========================= */
+if (resetTime) resetTimeInput.value = resetTime;
+
+setTimeBtn.onclick = () => {
+  resetTime = resetTimeInput.value;
+  localStorage.setItem('ssdResetTime', resetTime);
+  alert('Reset time set (this device only).');
+};
+
+// auto refresh table if admin is open
+setInterval(() => {
+  if (!adminDashboard.classList.contains("hidden")) renderTable();
+}, 8000);
+
+// AUTO RESET ONCE PER DAY
+setInterval(async () => {
+  if (!resetTime) return;
+
+  const now = new Date();
+  const [h,m] = resetTime.split(':').map(Number);
+
+  if (now.getHours() === h && now.getMinutes() === m) {
+    const todayKey = now.toISOString().slice(0,10);
+    const lastKey = localStorage.getItem("ssdLastAutoReset") || "";
+
+    if (lastKey !== todayKey) {
+      try {
+        await apiResetAttendance();
+        localStorage.setItem("ssdLastAutoReset", todayKey);
+        if (!adminDashboard.classList.contains("hidden")) await renderTable();
+      } catch (e) {
+        // silent
+      }
+    }
+  }
+}, 60000);
 </script>
 
 </body>
